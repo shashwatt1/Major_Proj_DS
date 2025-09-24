@@ -1,0 +1,16 @@
+pandas
+numpy
+streamlit
+seaborn
+matplotlib
+urlextract
+wordcloud
+emoji
+nltk
+chardet
+scikit-learn
+transformers
+torch
+bertopic
+sentence-transformers
+shap
