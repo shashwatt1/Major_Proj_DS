@@ -154,14 +154,34 @@ def generate_wordcloud(text, stopwords=None, width=800, height=400):
 
 def top_emojis(df: pd.DataFrame, n=20):
     all_emoji = []
+    pattern = None
+    try:
+        pattern = emoji.get_emoji_regexp()
+    except Exception:
+        pattern = None
     for m in df['message'].astype(str):
-        try:
-            all_emoji.extend([ch for ch in m if ch in emoji.UNICODE_EMOJI_ENGLISH])
-        except Exception:
-            all_emoji.extend([ch for ch in m if ch in emoji.UNICODE_EMOJI])
+        if pattern:
+            all_emoji.extend(pattern.findall(m))
+        else:
+            try:
+                data = getattr(emoji, "EMOJI_DATA", None)
+                if isinstance(data, dict) and data:
+                    all_emoji.extend([ch for ch in m if ch in data])
+                    continue
+            except Exception:
+                pass
+            try:
+                uni = getattr(emoji, "UNICODE_EMOJI_ENGLISH", None) or getattr(emoji, "UNICODE_EMOJI", None)
+                if isinstance(uni, dict):
+                    all_emoji.extend([ch for ch in m if ch in uni])
+                    continue
+            except Exception:
+                pass
+            all_emoji.extend([ch for ch in m if ord(ch) > 10000])
     counts = Counter(all_emoji)
     top = counts.most_common(n)
     return pd.DataFrame(top, columns=['emoji', 'count'])
+
 
 def topic_modeling_bertopic(documents, n_topics=None, embedding_model='all-MiniLM-L6-v2'):
     if not HAS_BERTOPIC:
