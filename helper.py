@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from collections import Counter
 import nltk
+import re
 import emoji
 from nltk.sentiment import SentimentIntensityAnalyzer
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
