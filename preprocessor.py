@@ -67,9 +67,23 @@ def count_emojis(text: str) -> int:
     if not isinstance(text, str):
         return 0
     try:
-        return sum(1 for ch in text if ch in emoji.UNICODE_EMOJI_ENGLISH)
+        pattern = emoji.get_emoji_regexp()
+        return len(pattern.findall(text))
     except Exception:
-        return sum(1 for ch in text if ch in emoji.UNICODE_EMOJI)
+        try:
+            data = getattr(emoji, "EMOJI_DATA", None)
+            if isinstance(data, dict) and data:
+                return sum(1 for ch in text if ch in data)
+        except Exception:
+            pass
+    try:
+        uni = getattr(emoji, "UNICODE_EMOJI_ENGLISH", None) or getattr(emoji, "UNICODE_EMOJI", None)
+        if isinstance(uni, dict):
+            return sum(1 for ch in text if ch in uni)
+    except Exception:
+        pass
+    return sum(1 for ch in text if ord(ch) > 10000)
+
 
 def count_links(text: str) -> int:
     if not isinstance(text, str):
